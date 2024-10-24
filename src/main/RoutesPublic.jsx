@@ -1,13 +1,13 @@
 import { Routes, Route } from 'react-router-dom'
 import Login from '../views/Login';
-import CadastroUsuario from '../views/CadastroUsuario';
+import UserRegistration from '../views/UserRegistration';
 import Home from '../views/Home';
-import ConsultaLancamento from '../views/ConsultaLancamento';
-import CadastroLancamento from '../views/CadastroLancamento';
+import LaunchQuery from '../views/LaunchQuery';
+import LaunchRegister from '../views/LaunchRegister';
 import RoutePrivate from './RoutePrivate';
-import ConfiguracoesConta from './../views/ConfiguracoesConta';
+import AccountSettings from '../views/AccountSettings';
 
-function rotas() {
+function RoutesPublic() {
 
     const routes = [
         {
@@ -16,8 +16,8 @@ function rotas() {
             isPrivate: false
         },
         {
-            path: '/cadastro-usuario',
-            component: <CadastroUsuario />,
+            path: '/register-user',
+            component: <UserRegistration />,
             isPrivate: false
         },
         {
@@ -26,25 +26,24 @@ function rotas() {
             isPrivate: true
         },
         {
-            path: '/consulta-lancamento',
-            component: <ConsultaLancamento />,
+            path: '/my-launch',
+            component: <LaunchQuery />,
             isPrivate: true
         },
         {
-            path: '/cadastro-lancamento',
-            component: <CadastroLancamento />,
+            path: '/register-launch',
+            component: <LaunchRegister />,
             isPrivate: true
         },
         {
-            path: '/configuracoes-conta',
-            component: <ConfiguracoesConta />,
+            path: '/account-settings',
+            component: <AccountSettings />,
             isPrivate: true
         },
     ]
 
 
     return (
-
         <Routes>
             {routes.map((item, index) => (
                 <Route key={index}
@@ -61,12 +60,11 @@ function rotas() {
                     <Home />
                 </RoutePrivate>
             } />
-            <Route path='/cadastro-usuario' element={<CadastroUsuario />} />
-            <Route path='/consulta-lancamento' element={<ConsultaLancamento />} />
-            <Route path='/cadastro-lancamento' element={<CadastroLancamento />} /> */}
+            <Route path='/register-user' element={<UserRegistration />} />
+            <Route path='/my-launch' element={<LaunchQuery />} />
+            <Route path='/register-launch' element={<LaunchRegister />} /> */}
         </Routes>
-
     );
 }
 
-export default rotas;
+export default RoutesPublic;

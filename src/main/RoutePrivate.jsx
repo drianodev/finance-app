@@ -1,12 +1,11 @@
 import { Navigate } from "react-router-dom";
-import { obterItem } from "../config/localstorageService";
-import { isUsuarioAutenticado } from "../config/AuthService";
+import { isUsuarioAutenticado } from "../service/AuthService";
 
+// eslint-disable-next-line react/prop-types
 function RoutePrivate({ children, isPrivate }) {
-
-    const usuarioLogado = isUsuarioAutenticado()
-
-    if (isPrivate && !usuarioLogado) {
+    const userLogado = isUsuarioAutenticado()
+    
+    if (isPrivate && !userLogado) {
         return <Navigate to="/" />
     }
 

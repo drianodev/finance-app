@@ -1,38 +1,37 @@
 import { useEffect, useState } from 'react';
-import Body from '../Components/Body';
-import Buttons from '../Components/Buttons';
-import Card from '../Components/Card';
-import { obterSaldo } from '../config/usuarioService';
+import Buttons from "../components/button/Buttons";
+import Body from "../components/body/Body";
+import Card from "../components/card/Card";
+import { getBalance } from "../service/UserService";
 import currencyFormatter from 'currency-formatter'
-import {  obterUsuarioLogado } from '../config/AuthService';
+import {  getLoggedInUser } from '../service/AuthService';
 
 function Home() {
-    const [saldo, setSaldo] = useState()
-    const[dados, setDados] = useState()
+    const [balance, setbalance] = useState()
+    const[data, setData] = useState()
 
     useEffect(() => {
-        const dadosDoUsuario = obterUsuarioLogado()
-        const valor = async () => {
-            const request = await obterSaldo(dadosDoUsuario.id)
-            setDados(dadosDoUsuario.nome)
-            setSaldo(request.data)
+        const dataUser = getLoggedInUser()
+        const value = async () => {
+            const request = await getBalance(dataUser.id)
+            const nameCapitalized = dataUser.name.charAt(0).toUpperCase() + dataUser.name.slice(1).toLowerCase()
+            setData(nameCapitalized)
+            setbalance(request.data)
         }
-        valor()
+        value()
     }, [])
-
-
 
     return (
         <Body>
             <Card title="Finance App">
-                <h1 className="display-4">Bem vindo, {dados} !</h1>
+                <h1 className="display-4">Bem vindo, {data} !</h1>
                 <p className="lead">Esse é seu sistema de finanças.</p>
-                <p className="lead">Seu saldo para o mês atual é de R$ {currencyFormatter.format(saldo, { locale: 'pt-BR' })}</p>
+                <p className="lead">Seu saldo para o mês atual é de R$ {currencyFormatter.format(balance, { locale: 'pt-BR' })}</p>
                 <hr className="my-4" />
                 <p>E essa é sua área administrativa, utilize um dos menus ou botões abaixo para navegar pelo sistema.</p>
                 <p className="lead" style={{ display: 'flex', gap: '20px' }}>
-                    <Buttons classe="success btn-lg" desc={<i className="pi pi-book"> Meus Lançamentos</i>} link linkTo='/consulta-lancamento' />
-                    <Buttons classe="danger btn-lg" desc={<i className="pi pi-money-bill"> Cadastrar Lançamento</i>} link linkTo={'/cadastro-lancamento'} />
+                    <Buttons classe="success btn-lg" desc={<i className="pi pi-book"> Meus Lançamentos</i>} link linkTo='/my-launch' />
+                    <Buttons classe="danger btn-lg" desc={<i className="pi pi-money-bill"> Cadastrar Lançamento</i>} link linkTo={'/register-launch'} />
                 </p>
             </Card>
         </Body>

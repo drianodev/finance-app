@@ -1,102 +1,92 @@
 import { useContext, useEffect, useState } from "react";
-import Body from "../Components/Body";
-import Buttons from "../Components/Buttons";
-import Card from "../Components/Card";
-import FormGroup from "../Components/FormGroup";
-import SelectMenu from "../Components/SelectMenu";
-import { listaMes, listaTipo } from "../config/listas/listas";
-import { obterItem } from "../config/localstorageService";
-import { atualizar, obterPorId, salvar } from "../config/lancamentoService";
-import { mensagemErro, mensagemSucesso } from "../Components/toastr";
+import Buttons from "../components/button/Buttons";
+import Body from "../components/body/Body";
+import Card from "../components/card/Card";
+import FormGroup from "../components/form/FormGroup";
+import SelectMenu from "../components/menu/SelectMenu";
+import { listMonth, listType } from "../utils/Lists";
+import { getItem } from "../service/LocalstorageService";
+import { update, getById, save } from "../service/LaunchService";
+import { errorMessage, messageSuccess } from "../components/toastr/Toastr";
 import { useNavigate } from "react-router-dom";
-import dadosContext from "../config/context/DadosContext";
+import dataContext from "../config/context/DataContext";
 
-function CadastroLancamento() {
-
-    const [dadosFormulario, setDadosFormulario] = useState({ id: null, descricao: '', mes: '', ano: '', valor: '', tipo: '', status: '', usuario: null })
-    const { lancamentoId, setLancamentoId } = useContext(dadosContext)
+function LaunchRegister() {
+    const [dateForm, setDateForm] = useState({ id: null, description: '', month: '', year: '', value: '', type: '', status: '', user: null })
+    const { launchId, setLaunchId } = useContext(dataContext)
     const navigator = useNavigate()
 
 
     useEffect(() => {
-        const editarItem = async () => {
-            if (lancamentoId) {
-                const data = await obterPorId(lancamentoId)
-                setDadosFormulario({ ...data.data })
+        const editItem = async () => {
+            if (launchId) {
+                const data = await getById(launchId)
+                setDateForm({ ...data.data })
             }
         }
-        editarItem()
+        editItem()
     }, [])
 
     const handleChangeState = ({ name, value }) => {
-        setDadosFormulario(prevState => ({
+        setDateForm(prevState => ({
             ...prevState,
             [name]: value,
         }))
     }
 
-
-
-    const atualizarLancamento = async () => {
-        const { descricao, mes, ano, valor, tipo, usuario, id, status } = dadosFormulario
-        const lancamento = { descricao, mes, ano, valor, tipo, usuario, id, status }
+    const updateLancamento = async () => {
+        const { description, month, year, value, type, user, id, status } = dateForm
+        const launch = { description, month, year, value, type, user, id, status }
         try {
-            const dados = await atualizar(lancamento)
-            if (dados.status === 200) {
-                mensagemSucesso("Lancamento atualizado com sucesso")
-                setLancamentoId('')
-                return navigator("/consulta-lancamento")
+            const data = await update(launch)
+            if (data.status === 200) {
+                messageSuccess("Lancamento atualizado com sucesso")
+                setLaunchId('')
+                return navigator("/my-launch")
             }
         } catch (error) {
-            mensagemErro(error.response.data)
+            errorMessage(error.response.data)
         }
-
     }
 
-    const salvarLancamento = async () => {
-        const usuarioLogado = obterItem("_USUARIO_LOGADO")
-        const { descricao, mes, ano, valor, tipo } = dadosFormulario
-        const lancamento = { descricao, mes, ano, valor, tipo, usuario: usuarioLogado.id }
-
+    const saveLaunch = async () => {
+        const userLogado = getItem("_USER_LOGGED")
+        const { description, month, year, value, type } = dateForm
+        const launch = { description, month, year, value, type, user: userLogado.id }
 
         try {
-
-            if (tipo === '') {
-                mensagemErro("Selecione um tipo para o lancamento")
+            if (type === '') {
+                errorMessage("Selecione um tipo para o lançamento")
             }
-            if (mes === '') {
-                mensagemErro("Selecione o mes para o lancamento")
+            if (month === '') {
+                errorMessage("Selecione o mês para o lançamento")
             }
-            if (tipo && mes) {
-                const salvo = await salvar(lancamento)
+            if (type && month) {
+                const salvo = await save(launch)
                 if (salvo.status === 201) {
-                    mensagemSucesso("Lancamento cadastrado com sucesso")
-                    setDadosFormulario({ id: null, descricao: '', mes: '', ano: '', valor: '', tipo: '', status: '' })
-                    navigator("/consulta-lancamento")
+                    messageSuccess("Lancamento cadastrado com sucesso")
+                    setDateForm({ id: null, description: '', month: '', year: '', value: '', type: '', status: '' })
+                    navigator("/my-launch")
                 }
             }
-
-
         } catch (error) {
-            mensagemErro(error.response.data)
+            errorMessage(error.response.data)
         }
     }
 
-    const cancelar = () => {
-        setDadosFormulario({ id: null, descricao: '', mes: '', ano: '', valor: '', tipo: '', status: '' })
-        setLancamentoId('')
+    const cancel = () => {
+        setDateForm({ id: null, description: '', month: '', year: '', value: '', type: '', status: '' })
+        setLaunchId('')
     }
 
     return (
         <>
             <Body>
-                <Card title={lancamentoId ? "Atualização de Lancamento" : "Cadastro de Lancamento"}>
+                <Card title={launchId ? "Atualização de Lancamento" : "Cadastro de Lancamento"}>
                     <div className="row">
                         <div className="col-lg-12">
                             <div className="bs-component">
                                 <fieldset style={{ display: 'flex', flexDirection: "column", gap: '20px' }}>
-
-
                                     <div className="row">
                                         <div className="col-lg-12">
                                             <div className="bs-component">
@@ -105,8 +95,8 @@ function CadastroLancamento() {
                                                     id="inputDescricao"
                                                     placeholder="Digite a Descrição"
                                                     type="text"
-                                                    name="descricao"
-                                                    value={dadosFormulario.descricao}
+                                                    name="description"
+                                                    value={dateForm.description}
                                                     change={e => { handleChangeState(e.target) }} />
                                             </div>
                                         </div>
@@ -115,12 +105,12 @@ function CadastroLancamento() {
                                         <div className="col-lg-6">
                                             <div className="bs-component">
                                                 <SelectMenu
-                                                    lista={listaMes}
+                                                    lista={listMonth}
                                                     label="Mês: *"
-                                                    id="mes"
-                                                    value={dadosFormulario.mes}
+                                                    id="month"
+                                                    value={dateForm.month}
                                                     change={e => { handleChangeState(e.target) }}
-                                                    name="mes" />
+                                                    name="month" />
                                             </div>
                                         </div>
                                         <div className="col-lg-6">
@@ -128,11 +118,11 @@ function CadastroLancamento() {
                                                 <FormGroup
                                                     label="Ano: *"
                                                     id="inputAno"
-                                                    placeholder="Digite o ano"
+                                                    placeholder="Digite o year"
                                                     type="number"
-                                                    name="ano"
+                                                    name="year"
                                                     change={e => { handleChangeState(e.target) }}
-                                                    value={dadosFormulario.ano}
+                                                    value={dateForm.year}
                                                 />
                                             </div>
                                         </div>
@@ -143,37 +133,37 @@ function CadastroLancamento() {
                                                 <FormGroup
                                                     label="Valor: *"
                                                     id="inputValor"
-                                                    placeholder="Digite o valor"
+                                                    placeholder="Digite o value"
                                                     type="number"
-                                                    name="valor"
+                                                    name="value"
                                                     change={e => { handleChangeState(e.target) }}
-                                                    value={dadosFormulario.valor}
+                                                    value={dateForm.value}
                                                 />
                                             </div>
                                         </div>
                                         <div className="col-lg-4">
                                             <div className="bs-component">
                                                 <SelectMenu
-                                                    lista={listaTipo}
+                                                    lista={listType}
                                                     label="Tipo: *"
-                                                    value={dadosFormulario.tipo}
+                                                    value={dateForm.type}
                                                     change={e => { handleChangeState(e.target) }}
-                                                    name="tipo"
+                                                    name="type"
                                                 />
                                             </div>
                                         </div>
                                         <div className="col-lg-4">
                                             <div className="bs-component">
                                                 <FormGroup label="Status:"
-                                                    value={dadosFormulario.status}
+                                                    value={dateForm.status}
                                                     disabled />
                                             </div>
                                         </div>
                                     </div>
                                     <div style={{ display: 'flex', gap: '10px' }}>
-                                        <Buttons classe="success" desc={lancamentoId ? <i className="pi pi-refresh"> Atualizar</i> : <i className="pi pi-save"> Salvar</i>}
-                                            onClick={lancamentoId ? atualizarLancamento : salvarLancamento} />
-                                        <Buttons classe="danger" desc={<i className="pi pi-times"> Cancelar</i>} link linkTo="/home" onClick={cancelar} />
+                                        <Buttons classe="success" desc={launchId ? <i className="pi pi-refresh"> Atualizar</i> : <i className="pi pi-save"> Salvar</i>}
+                                            onClick={launchId ? updateLancamento : saveLaunch} />
+                                        <Buttons classe="danger" desc={<i className="pi pi-times"> Cancelar</i>} link linkTo="/home" onClick={cancel} />
                                     </div>
                                 </fieldset>
                             </div>
@@ -185,4 +175,4 @@ function CadastroLancamento() {
     );
 }
 
-export default CadastroLancamento;
+export default LaunchRegister;

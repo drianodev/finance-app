@@ -18,16 +18,16 @@ toastr.options = {
     "hideMethod": "fadeOut"
 }
 
-export const mostrarMensagem = (tipo, mensagem, titulo) => {
-    return toastr[tipo](mensagem, titulo);
+export const showMessage = (type, message, title) => {
+    return toastr[type](message, title);
 }
 
-export const mensagemErro = (mensagem) =>{
-    mostrarMensagem('error',mensagem, 'Erro' )
+export const errorMessage = (message) =>{
+    showMessage('error', message, 'Erro')
 }
-export const mensagemSucesso = (mensagem) =>{
-    mostrarMensagem('success',mensagem, 'Sucesso' )
+export const messageSuccess = (message) =>{
+    showMessage('success', message, 'Sucesso')
 }
-export const mensagemAlerta = (mensagem) =>{
-    mostrarMensagem('warning',mensagem, 'Alerta' )
+export const messageAlert = (message) =>{
+    showMessage('warning', message, 'Alerta')
 }

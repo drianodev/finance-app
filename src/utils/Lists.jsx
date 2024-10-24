@@ -1,4 +1,4 @@
-export const listaMes = [
+export const listMonth = [
     { value: '', label: 'Selecione...' },
     { value: 1, label: 'Janeiro' },
     { value: 2, label: 'Fevereiro' },
@@ -14,8 +14,8 @@ export const listaMes = [
     { value: 12, label: 'Dezembro' },
 ]
 
-export const listaTipo = [
+export const listType = [
     { value: '', label: 'Selecione...' },
-    { value: "RECEITA", label: 'Receita' },
-    { value: "DESPESA", label: 'Despesa' }
+    { value: "INCOME", label: 'Receita' },
+    { value: "EXPENSE", label: 'Despesa' }
 ]

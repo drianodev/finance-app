@@ -1,112 +1,112 @@
 import { useContext, useEffect, useState } from "react";
-import Body from "../Components/Body";
-import Buttons from "../Components/Buttons";
-import Card from "../Components/Card";
-import FormGroup from "../Components/FormGroup";
-import LancamentoList from "../Components/LancamentoList";
-import SelectMenu from "../Components/SelectMenu";
-import { atualizarStatus, buscarLancamento, deletarLancamento } from "../config/lancamentoService";
-import { obterItem } from "../config/localstorageService";
-import { listaMes, listaTipo } from "../config/listas/listas";
-import { mensagemAlerta, mensagemErro, mensagemSucesso } from "../Components/toastr";
+import Buttons from "../components/button/Buttons";
+import Body from "../components/body/Body";
+import Card from "../components/card/Card";
+import FormGroup from "../components/form/FormGroup";
+import LaunchList from "../components/launch/LaunchList";
+import SelectMenu from "../components/menu/SelectMenu";
+import { getLaunch, updateStatus, deleteLaunch } from "../service/LaunchService";
+import { getItem } from "../service/LocalstorageService";
+import { listMonth, listType } from "../utils/Lists";
+import { messageAlert, errorMessage, messageSuccess } from "../components/toastr/Toastr";
 import { ConfirmDialog } from 'primereact/confirmdialog';
-import DadosContext from "../config/context/DadosContext";
+import DataContext from "../config/context/DataContext";
 import { useNavigate } from "react-router-dom";
-import { USUARIO_LOGADO } from "../config/AuthService";
+import { USER_LOGGED } from "../service/AuthService";
 
-
-
-function ConsultaLancamento() {
-    const [filtro, setFiltro] = useState({ ano: '', mes: '', tipo: '', descricao: '' })
-    const [lancamento, setLancamento] = useState([])
+function LaunchQuery() {
+    const [filter, setFilter] = useState({ year: '', month: '', type: '', description: '' })
+    const [launch, setLaunch] = useState([])
     const [dialogData, setDialogData] = useState({ show: false, data: {} })
-    const { setLancamentoId } = useContext(DadosContext)
+    const { setLaunchId } = useContext(DataContext)
     const navigator = useNavigate()
 
 
     useEffect(() => {
-        const dados = async () => {
-            const usuarioLogado = obterItem('_USUARIO_LOGADO')
+        const data = async () => {
+            const userLogged = getItem('_USER_LOGGED')
 
-            const lancamentoFiltro = { usuario: usuarioLogado.id }
+            const launchFilter = { user: userLogged.id }
             try {
-
-                const dados = await buscarLancamento(lancamentoFiltro)
-                const mostrarDados = dados.data.slice(0, 5)
-                setLancamento(mostrarDados)
+                const data = await getLaunch(launchFilter)
+                const showData = data.data.slice(0, 5)
+                setLaunch(showData)
             } catch (error) {
                 if (error.response) {
-                    mensagemErro(error.response.data)
+                    errorMessage(error.response.data)
                 }
             }
-
         }
-        dados()
+        data()
     }, [])
-
 
     useEffect(() => {
     }, [dialogData])
 
-    const buscar = async () => {
-        const usuarioLogado = obterItem(USUARIO_LOGADO)
-        const lancamentoFiltro = {
-            ano: filtro.ano,
-            mes: filtro.mes,
-            tipo: filtro.tipo,
-            usuario: usuarioLogado.id,
-            descricao: filtro.descricao
+    const search = async () => {
+        const userLogged = getItem(USER_LOGGED)
+        const launchFilter = {
+            year: filter.year,
+            month: filter.month,
+            type: filter.type,
+            user: userLogged.id,
+            description: filter.description
         }
         try {
-            const dados = await buscarLancamento(lancamentoFiltro)
-            if (dados.data.length < 1) {
-                mensagemAlerta("Não foi encontrado lançamento para os parametros")
-                setLancamento([])
+            const data = await getLaunch(launchFilter)
+            console.log('data - ', data)
+            if (data.data.length < 1) {
+                messageAlert("Não foi encontrado lançamento para os parametros")
+                setLaunch([])
             } else {
-                setLancamento(dados.data)
+                setLaunch(data.data)
             }
         } catch (error) {
             if (error.response) {
-                mensagemErro(error.response.data)
+                errorMessage(error.response.data)
             }
         }
 
     }
 
-    const alteraStatus = async (id, status) => {
-
+    const handleUpdateStatus = async (idLaunch, status) => {
         try {
-            const response = await atualizarStatus(id, status)
+            const response = await updateStatus(idLaunch, status)
+            console.log('cheguei aqui')
             if (response.status === 200) {
-                mensagemSucesso("Lancamento alterado com sucesso")
-                buscar()
+                console.log('cheguei aqui 2')
+                messageSuccess("Lancamento alterado com sucesso")
+                search()
             }
         } catch (error) {
-            mensagemErro(error.response.data)
+            errorMessage(error.response.data)
         }
     }
 
-    const handleEditChange = (id) => {
-        setLancamentoId(id)
-        navigator("/cadastro-lancamento")
+    const handleEditChange = (idLaunch) => {
+        setLaunchId(idLaunch)
+        navigator("/register-launch")
 
     }
 
-    const mostraDialog = (lancamento) => {
-        setDialogData({ show: true, data: lancamento })
+    const showDialog = (launch) => {
+        console.log('showDialog -', launch)
+        setDialogData({ show: true, data: launch })
     }
 
     const handleDeleteChange = async () => {
-
+        console.log('dialogData -', dialogData)
         try {
-            const deletar = await deletarLancamento(dialogData.data.id)
+            const deletar = await deleteLaunch(dialogData.data.idLaunch)
+            
             if (deletar.status === 204) {
-                const novaLista = lancamento.filter(item => item.id !== dialogData.data.id)
-                setLancamento(novaLista)
-                mensagemSucesso("Lancamento deletado com sucesso")
+                const newList = launch.filter(item => item.idLaunch !== dialogData.data.idLaunch)
+                console.log('new list -', newList)
+                setLaunch(newList)
+                messageSuccess("Lancamento deletado com sucesso")
             }
         } catch (error) {
-            mensagemErro(error.response.data)
+            errorMessage(error.response.data)
         }
     }
 
@@ -126,19 +126,19 @@ function ConsultaLancamento() {
                                         <div className="col-lg-6">
                                             <div className="bs-component">
                                                 <SelectMenu
-                                                    lista={listaMes}
+                                                    lista={listMonth}
                                                     label="Mês: *"
-                                                    id="mes"
-                                                    value={filtro.mes}
-                                                    change={e => setFiltro({ ...filtro, mes: e.target.value })}
+                                                    id="month"
+                                                    value={filter.month}
+                                                    change={e => setFilter({ ...filter, month: e.target.value })}
                                                 />
                                             </div>
                                         </div>
                                         <div className="col-lg-6">
                                             <div className="bs-component">
                                                 <FormGroup
-                                                    value={filtro.ano}
-                                                    change={e => setFiltro({ ...filtro, ano: e.target.value })}
+                                                    value={filter.year}
+                                                    change={e => setFilter({ ...filter, year: e.target.value })}
                                                     type="text"
                                                     className="form-control"
                                                     id="inputAno"
@@ -153,8 +153,8 @@ function ConsultaLancamento() {
                                         <div className="col-lg-6">
                                             <div className="bs-component">
                                                 <FormGroup
-                                                    value={filtro.descricao}
-                                                    change={e => setFiltro({ ...filtro, descricao: e.target.value })}
+                                                    value={filter.description}
+                                                    change={e => setFilter({ ...filter, description: e.target.value })}
                                                     type="text"
                                                     className="form-control"
                                                     id="inputDescricao"
@@ -166,19 +166,19 @@ function ConsultaLancamento() {
                                         <div className="col-lg-6">
                                             <div className="bs-component">
                                                 <SelectMenu
-                                                    lista={listaTipo}
+                                                    lista={listType}
                                                     label="Tipo de Lançamento:"
                                                     id="tipoLancamento"
-                                                    value={filtro.tipo}
-                                                    change={e => setFiltro({ ...filtro, tipo: e.target.value })}
+                                                    value={filter.type}
+                                                    change={e => setFilter({ ...filter, type: e.target.value })}
                                                 />
                                             </div>
                                         </div>
                                     </div>
 
                                     <div style={{ display: 'flex', gap: '10px' }}>
-                                        <Buttons desc={<i className="pi pi-search"> Buscar</i>} classe="success" onClick={buscar} />
-                                        <Buttons desc={<i className="pi pi-plus"> Cadastrar</i>} classe="danger" link linkTo="/cadastro-lancamento" />
+                                        <Buttons desc={<i className="pi pi-search"> search</i>} classe="success" onClick={search} />
+                                        <Buttons desc={<i className="pi pi-plus"> Cadastrar</i>} classe="danger" link linkTo="/register-launch" />
                                     </div>
                                 </fieldset>
                             </div>
@@ -187,13 +187,13 @@ function ConsultaLancamento() {
                     <div className="row mt-4">
                         <div className="col-md-12">
                             <div className="bs-component">
-                                <LancamentoList
+                                <LaunchList
                                     caption="# Lista de Lançamentos"
-                                    lancamento={lancamento}
-                                    atualizaStatusEfetivado={alteraStatus}
-                                    atualizaStatusCancelado={alteraStatus}
+                                    launch={launch}
+                                    updateStatusEffective={handleUpdateStatus}
+                                    updateStatusCancelled={handleUpdateStatus}
                                     edit={handleEditChange}
-                                    del={mostraDialog} />
+                                    del={showDialog} />
                             </div>
                         </div>
                     </div>
@@ -213,4 +213,4 @@ function ConsultaLancamento() {
     );
 }
 
-export default ConsultaLancamento;
+export default LaunchQuery;

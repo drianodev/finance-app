@@ -8,12 +8,12 @@ export const get = (url) => {
     return httpClient.get(url)
 }
 
-export const post = (url, objeto) => {
-    return httpClient.post(url, objeto)
+export const post = (url, object) => {
+    return httpClient.post(url, object)
 }
 
-export const put = (url, objeto) => {
-    return httpClient.put(url, objeto)
+export const put = (url, object) => {
+    return httpClient.put(url, object)
 }
 
 export const del = (url) => {
