@@ -8,9 +8,9 @@ function LaunchList({ caption, launch, edit, del, updateStatusEffective, updateS
   const translateType = (tipo) => {
     switch (tipo) {
         case 'INCOME':
-            return 'Receita';
+            return 'Entrada';
         case 'EXPENSE':
-            return 'Despesa';
+            return 'Saída';
         default:
             return tipo;
     }

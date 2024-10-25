@@ -16,6 +16,6 @@ export const listMonth = [
 
 export const listType = [
     { value: '', label: 'Selecione...' },
-    { value: "INCOME", label: 'Receita' },
-    { value: "EXPENSE", label: 'Despesa' }
+    { value: "INCOME", label: 'Entrada' },
+    { value: "EXPENSE", label: 'Saída' }
 ]
