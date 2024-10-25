@@ -54,13 +54,13 @@ function Navbar() {
       icon: '',
       render: userAuthenticated()
     },
-    {
-      description: 'Configurações Conta',
-      linkTo: '/account-settings', 
-      onClick: '', 
-      icon: '', 
-      render: userAuthenticated()
-    },
+    // {
+    //   description: 'Configurações Conta',
+    //   linkTo: '/account-settings', 
+    //   onClick: '', 
+    //   icon: '', 
+    //   render: userAuthenticated()
+    // },
     {
       description: 'Sair',
       linkTo: '/',
