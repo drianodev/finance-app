@@ -2,7 +2,7 @@ import axios from 'axios'
 
 const httpClient = axios.create({
     // baseURL: 'http://localhost:8080'
-    baseURL: 'https://finance-api-kmjz.onrender.com'
+    baseURL: import.meta.env.VITE_BASE_URL
 })
 
 export const get = (url) => {
