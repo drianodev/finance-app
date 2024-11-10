@@ -36,7 +36,7 @@ function LaunchRegister() {
             }
         }
         editItem()
-    }, [])
+    }, [launchId])
 
     const handleChangeState = ({ name, value }) => {
         setDateForm(prevState => ({
@@ -47,7 +47,7 @@ function LaunchRegister() {
 
     const updateLancamento = async (event) => {
         event.preventDefault();
-        const { description, month, year, value, type, user, id, status } = dateForm;
+        const { description, month, year, value, type, user, id, status } = { ...dateForm, id: launchId };
     
         if (!description || !month || !year || !value || !type) {
             errorMessage("Todos os campos obrigatórios devem ser preenchidos.");
