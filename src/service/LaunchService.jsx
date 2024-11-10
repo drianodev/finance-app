@@ -28,7 +28,6 @@ export const getLaunch = (launchFilter) =>{
 }
 
 export const deleteLaunch = (id) =>{
-    console.log('deleteLaunch - ', id)
     return del(`${URL}/${id}`)
 }
 

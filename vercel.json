@@ -1,9 +1,12 @@
 {
-    "rewrites": [
-      {
-        "source": "/api/:path*",  
-        "destination": "http://190.106.91.44:8080/:path*"  
-      }
-    ]
-  }
-  
+  "rewrites": [
+    {
+      "source": "/api/:path*",  
+      "destination": "http://190.106.91.44:8080/:path*"  
+    },
+    {
+      "source": "/(.*)",  
+      "destination": "/"  
+    }
+  ]
+}

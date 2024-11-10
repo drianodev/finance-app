@@ -8,7 +8,6 @@ function AccountSettings() {
 
     useEffect(() => {
         const dataUser = getLoggedInUser()
-        console.log(dataUser);
         const value = async () => {
             setData(dataUser.name)
         }

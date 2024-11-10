@@ -2,7 +2,7 @@ export const listMonth = [
     { value: '', label: 'Selecione...' },
     { value: 1, label: 'Janeiro' },
     { value: 2, label: 'Fevereiro' },
-    { value: 3, label: 'Marco' },
+    { value: 3, label: 'Março' },
     { value: 4, label: 'Abril' },
     { value: 5, label: 'Maio' },
     { value: 6, label: 'Junho' },

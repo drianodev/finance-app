@@ -21,6 +21,9 @@ function LaunchQuery() {
     const { setLaunchId } = useContext(DataContext)
     const navigator = useNavigate()
 
+    const currentYear = new Date().getFullYear();
+    const yearsList = [{ value: '', label: 'Selecione...' }, ...Array.from({ length: 5 }, (_, i) => ({ value: currentYear - i, label: currentYear - i }))];
+
 
     useEffect(() => {
         const data = async () => {
@@ -29,8 +32,7 @@ function LaunchQuery() {
             const launchFilter = { user: userLogged.id }
             try {
                 const data = await getLaunch(launchFilter)
-                const showData = data.data.slice(0, 5)
-                setLaunch(showData)
+                setLaunch(data.data)
             } catch (error) {
                 if (error.response) {
                     errorMessage(error.response.data)
@@ -54,7 +56,6 @@ function LaunchQuery() {
         }
         try {
             const data = await getLaunch(launchFilter)
-            console.log('data - ', data)
             if (data.data.length < 1) {
                 messageAlert("Não foi encontrado lançamento para os parametros")
                 setLaunch([])
@@ -72,9 +73,7 @@ function LaunchQuery() {
     const handleUpdateStatus = async (idLaunch, status) => {
         try {
             const response = await updateStatus(idLaunch, status)
-            console.log('cheguei aqui')
             if (response.status === 200) {
-                console.log('cheguei aqui 2')
                 messageSuccess("Lancamento alterado com sucesso")
                 search()
             }
@@ -86,22 +85,18 @@ function LaunchQuery() {
     const handleEditChange = (idLaunch) => {
         setLaunchId(idLaunch)
         navigator("/register-launch")
-
     }
 
     const showDialog = (launch) => {
-        console.log('showDialog -', launch)
         setDialogData({ show: true, data: launch })
     }
 
     const handleDeleteChange = async () => {
-        console.log('dialogData -', dialogData)
         try {
             const deletar = await deleteLaunch(dialogData.data.idLaunch)
             
             if (deletar.status === 204) {
                 const newList = launch.filter(item => item.idLaunch !== dialogData.data.idLaunch)
-                console.log('new list -', newList)
                 setLaunch(newList)
                 messageSuccess("Lancamento deletado com sucesso")
             }
@@ -113,6 +108,10 @@ function LaunchQuery() {
     const handleRejectChange = () => {
         setDialogData({ show: false, data: {} })
     }
+
+    const handleBackToMain = () => {
+        navigator("/home"); 
+    };
 
     return (
         <>
@@ -136,15 +135,13 @@ function LaunchQuery() {
                                         </div>
                                         <div className="col-lg-6">
                                             <div className="bs-component">
-                                                <FormGroup
+                                                <SelectMenu
+                                                    lista={yearsList}
+                                                    label="Ano: *"
+                                                    id="year"
                                                     value={filter.year}
                                                     change={e => setFilter({ ...filter, year: e.target.value })}
-                                                    type="text"
-                                                    className="form-control"
-                                                    id="inputAno"
-                                                    label="Ano: *"
-                                                    placeholder="Digite o Ano"
-                                                    name="inputAno" />
+                                                    name="year" />
                                             </div>
                                         </div>
                                     </div>
@@ -158,8 +155,8 @@ function LaunchQuery() {
                                                     type="text"
                                                     className="form-control"
                                                     id="inputDescricao"
-                                                    label="Descricao: "
-                                                    placeholder="Digite a Descricao"
+                                                    label="Descrição: "
+                                                    placeholder="Digite a Descrição"
                                                     name="inputDescricao" />
                                             </div>
                                         </div>
@@ -177,7 +174,7 @@ function LaunchQuery() {
                                     </div>
 
                                     <div style={{ display: 'flex', gap: '10px' }}>
-                                        <Buttons desc={<i className="pi pi-search"> search</i>} classe="success" onClick={search} />
+                                        <Buttons desc={<i className="pi pi-search"> Pesquisar</i>} classe="success" onClick={search} />
                                         <Buttons desc={<i className="pi pi-plus"> Cadastrar</i>} classe="danger" link linkTo="/register-launch" />
                                     </div>
                                 </fieldset>
@@ -206,6 +203,9 @@ function LaunchQuery() {
                             accept={handleDeleteChange}
                             reject={handleRejectChange}
                         />
+                    </div>
+                    <div style={{ marginTop: '20px', marginBottom: '20px' }}>
+                        <Buttons desc="Voltar à Tela Principal" classe="primary" onClick={handleBackToMain} />
                     </div>
                 </Card>
             </Body>

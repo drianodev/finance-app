@@ -3,7 +3,7 @@ import Body from "../components/body/Body";
 import Card from "../components/card/Card";
 import FormGroup from "../components/form/FormGroup";
 
-import { useContext, useState } from "react";
+import { useContext, useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { authenticate } from "../service/UserService";
 import { errorMessage } from "../components/toastr/Toastr";
@@ -34,6 +34,19 @@ function Login() {
     const { name, value } = e.target;
     setUserData(prevState => ({ ...prevState, [name]: value }));
   };
+
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (e.key === "Enter") {
+        entrar();
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => {
+      window.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [userData]);
 
   return (
     <Body width="6">

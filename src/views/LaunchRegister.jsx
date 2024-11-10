@@ -12,10 +12,21 @@ import { useNavigate } from "react-router-dom";
 import dataContext from "../config/context/DataContext";
 
 function LaunchRegister() {
-    const [dateForm, setDateForm] = useState({ id: null, description: '', month: '', year: '', value: '', type: '', status: '', user: null })
+    const [dateForm, setDateForm] = useState({ 
+        id: null, 
+        description: '', 
+        month: '', 
+        year: new Date().getFullYear(), 
+        value: '', 
+        type: '', 
+        status: '', 
+        user: null 
+    })
     const { launchId, setLaunchId } = useContext(dataContext)
     const navigator = useNavigate()
 
+    const currentYear = new Date().getFullYear();
+    const yearsList = Array.from({ length: 5 }, (_, i) => currentYear - i); 
 
     useEffect(() => {
         const editItem = async () => {
@@ -34,45 +45,50 @@ function LaunchRegister() {
         }))
     }
 
-    const updateLancamento = async () => {
-        const { description, month, year, value, type, user, id, status } = dateForm
-        const launch = { description, month, year, value, type, user, id, status }
+    const updateLancamento = async (event) => {
+        event.preventDefault();
+        const { description, month, year, value, type, user, id, status } = dateForm;
+    
+        if (!description || !month || !year || !value || !type) {
+            errorMessage("Todos os campos obrigatórios devem ser preenchidos.");
+            return;
+        }
+    
+        const launch = { description, month, year, value, type, user, id, status };
         try {
-            const data = await update(launch)
+            const data = await update(launch);
             if (data.status === 200) {
-                messageSuccess("Lancamento atualizado com sucesso")
-                setLaunchId('')
-                return navigator("/my-launch")
+                messageSuccess("Lançamento atualizado com sucesso");
+                setLaunchId('');
+                return navigator("/my-launch");
             }
         } catch (error) {
-            errorMessage(error.response.data)
+            errorMessage(error.response.data);
         }
-    }
-
-    const saveLaunch = async () => {
-        const userLogado = getItem("_USER_LOGGED")
-        const { description, month, year, value, type } = dateForm
-        const launch = { description, month, year, value, type, user: userLogado.id }
-
+    };
+    
+    const saveLaunch = async (event) => {
+        event.preventDefault();
+        const userLogado = getItem("_USER_LOGGED");
+        const { description, month, year, value, type } = dateForm;
+    
+        if (!description || !month || !year || !value || !type) {
+            errorMessage("Todos os campos obrigatórios devem ser preenchidos.");
+            return;
+        }
+    
+        const launch = { description, month, year, value, type, user: userLogado.id };
         try {
-            if (type === '') {
-                errorMessage("Selecione um tipo para o lançamento")
-            }
-            if (month === '') {
-                errorMessage("Selecione o mês para o lançamento")
-            }
-            if (type && month) {
-                const salvo = await save(launch)
-                if (salvo.status === 201) {
-                    messageSuccess("Lancamento cadastrado com sucesso")
-                    setDateForm({ id: null, description: '', month: '', year: '', value: '', type: '', status: '' })
-                    navigator("/my-launch")
-                }
+            const salvo = await save(launch);
+            if (salvo.status === 201) {
+                messageSuccess("Lançamento cadastrado com sucesso");
+                setDateForm({ id: null, description: '', month: '', year: '', value: '', type: '', status: '' });
+                navigator("/my-launch");
             }
         } catch (error) {
-            errorMessage(error.response.data)
+            errorMessage(error.response.data);
         }
-    }
+    };    
 
     const cancel = () => {
         setDateForm({ id: null, description: '', month: '', year: '', value: '', type: '', status: '' })
@@ -115,15 +131,13 @@ function LaunchRegister() {
                                         </div>
                                         <div className="col-lg-6">
                                             <div className="bs-component">
-                                                <FormGroup
+                                                <SelectMenu
+                                                    lista={yearsList.map(year => ({ value: year, label: year }))}
                                                     label="Ano: *"
-                                                    id="inputAno"
-                                                    placeholder="Digite o year"
-                                                    type="number"
-                                                    name="year"
-                                                    change={e => { handleChangeState(e.target) }}
+                                                    id="year"
                                                     value={dateForm.year}
-                                                />
+                                                    change={e => { handleChangeState(e.target) }}
+                                                    name="year" />
                                             </div>
                                         </div>
                                     </div>
@@ -136,6 +150,7 @@ function LaunchRegister() {
                                                     placeholder="Digite o value"
                                                     type="number"
                                                     name="value"
+                                                    inputMode="numeric"
                                                     change={e => { handleChangeState(e.target) }}
                                                     value={dateForm.value}
                                                 />
@@ -161,8 +176,9 @@ function LaunchRegister() {
                                         </div>
                                     </div>
                                     <div style={{ display: 'flex', gap: '10px' }}>
-                                        <Buttons classe="success" desc={launchId ? <i className="pi pi-refresh"> Atualizar</i> : <i className="pi pi-save"> Salvar</i>}
-                                            onClick={launchId ? updateLancamento : saveLaunch} />
+                                        <Buttons classe="success" 
+                                            desc={launchId ? <i className="pi pi-refresh"> Atualizar</i> : <i className="pi pi-save"> Salvar</i>}
+                                            onClick={(event) => launchId ? updateLancamento(event) : saveLaunch(event)} />
                                         <Buttons classe="danger" desc={<i className="pi pi-times"> Cancelar</i>} link linkTo="/home" onClick={cancel} />
                                     </div>
                                 </fieldset>
